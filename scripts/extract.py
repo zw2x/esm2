@@ -9,7 +9,7 @@ import pathlib
 
 import torch
 
-from esm import Alphabet, FastaBatchedDataset, ProteinBertModel, pretrained, MSATransformer
+from esm2 import Alphabet, FastaBatchedDataset, ProteinBertModel, pretrained, MSATransformer
 
 
 def create_parser():

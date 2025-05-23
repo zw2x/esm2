@@ -13,7 +13,7 @@ from openfold.model.triangular_multiplicative_update import (
 )
 from torch import nn
 
-from esm.esmfold.v1.misc import (
+from esm2.esmfold.v1.misc import (
     Attention,
     Dropout,
     PairToSequence,

@@ -5,7 +5,7 @@
 
 dependencies = ["torch"]
 
-from esm.pretrained import (
+from esm2.pretrained import (
     esm1_t6_43M_UR50S,
     esm1_t12_85M_UR50S,
     esm1_t34_670M_UR50D,

@@ -15,8 +15,8 @@ from timeit import default_timer as timer
 
 import torch
 
-import esm
-from esm.data import read_fasta
+import esm2
+from esm2.data import read_fasta
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -140,7 +140,7 @@ def run(args):
         # if pretrained model path is available
         torch.hub.set_dir(args.model_dir)
 
-    model = esm.pretrained.esmfold_v1()
+    model = esm2.pretrained.esmfold_v1()
 
 
     model = model.eval()

@@ -7,7 +7,7 @@ import logging
 from typing import Tuple, Dict
 import torch
 from torch import nn
-from esm.data import Alphabet
+from esm2.data import Alphabet
 from utils.tensor import add_eos_bos, is_1hot_tensor
 from torch import nn
 from torch.nn import functional as F
@@ -78,7 +78,7 @@ def load_model():
     model = LinearProjectionDistogramModel()
     model_state = state['model']
     model.load_state_dict(model_state)
-    from esm.pretrained import esm2_t33_650M_UR50D
+    from esm2.pretrained import esm2_t33_650M_UR50D
     base_model, alphabet = esm2_t33_650M_UR50D()
     model.base_model = base_model
     return model

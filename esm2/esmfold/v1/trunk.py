@@ -10,7 +10,7 @@ import torch
 import torch.nn as nn
 from openfold.model.structure_module import StructureModule
 
-from esm.esmfold.v1.tri_self_attn_block import TriangularSelfAttentionBlock
+from esm2.esmfold.v1.tri_self_attn_block import TriangularSelfAttentionBlock
 
 
 @dataclass

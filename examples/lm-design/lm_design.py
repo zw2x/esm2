@@ -26,7 +26,7 @@ import torch.nn.functional as F
 # make sure script started from the root of the this file
 assert Path.cwd().name == 'lm-design', 'Please run this script from examples/lm-design/'
 sys.path.append('../../')
-from esm.data import Alphabet
+from esm2.data import Alphabet
 
 from utils.scheduler import SchedulerSpec, to_scheduler, set_scheduler_repo
 import utils.pdb_loader as pdb_loader

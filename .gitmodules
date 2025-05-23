@@ -1,0 +1,3 @@
+[submodule "third_party/openfold"]
+	path = third_party/openfold
+	url = https://github.com/aqlaboratory/openfold.git

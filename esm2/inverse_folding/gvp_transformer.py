@@ -3,19 +3,19 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-import argparse
-from typing import Any, Dict, List, Optional, Tuple, NamedTuple
+# import argparse
+# from typing import Any, Dict, List, Optional, Tuple, NamedTuple
 import torch
 from torch import nn
-from torch import Tensor
+# from torch import Tensor
 import torch.nn.functional as F
-from scipy.spatial import transform
-
-from esm.data import Alphabet
-
-from .features import DihedralFeatures
-from .gvp_encoder import GVPEncoder
-from .gvp_utils import unflatten_graph
+# from scipy.spatial import transform
+# 
+# from esm2.data import Alphabet
+# 
+# from .features import DihedralFeatures
+# from .gvp_encoder import GVPEncoder
+# from .gvp_utils import unflatten_graph
 from .gvp_transformer_encoder import GVPTransformerEncoder
 from .transformer_decoder import TransformerDecoder
 from .util import rotate, CoordBatchConverter 

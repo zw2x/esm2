@@ -7,7 +7,7 @@ import torch
 from fairscale.nn.data_parallel import FullyShardedDataParallel as FSDP
 from fairscale.nn.wrap import enable_wrap, wrap
 
-import esm
+import esm2
 
 # init the distributed world with world_size 1
 url = "tcp://localhost:23456"
@@ -15,7 +15,7 @@ torch.distributed.init_process_group(backend="nccl", init_method=url, world_size
 
 # download model data from the hub
 model_name = "esm2_t48_15B_UR50D"
-model_data, regression_data = esm.pretrained._download_model_and_regression_data(model_name)
+model_data, regression_data = esm2.pretrained._download_model_and_regression_data(model_name)
 
 # initialize the model with FSDP wrapper
 fsdp_params = dict(
@@ -25,7 +25,7 @@ fsdp_params = dict(
     cpu_offload=True,  # enable cpu offloading
 )
 with enable_wrap(wrapper_cls=FSDP, **fsdp_params):
-    model, vocab = esm.pretrained.load_model_and_alphabet_core(
+    model, vocab = esm2.pretrained.load_model_and_alphabet_core(
         model_name, model_data, regression_data
     )
     batch_converter = vocab.get_batch_converter()

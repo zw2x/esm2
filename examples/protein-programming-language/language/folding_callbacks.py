@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from io import StringIO
 from typing import List
 
-import esm
+import esm2
 import torch
 from biotite.structure import AtomArray
 import numpy as np
@@ -49,7 +49,7 @@ class EsmFoldv1(FoldingCallback):
         self.model = None
 
     def load(self, device: str) -> None:
-        self.model = esm.pretrained.esmfold_v1().eval()
+        self.model = esm2.pretrained.esmfold_v1().eval()
         self.model = self.model.to(device)
 
     def fold(self, sequence: str, residue_indices: List[int]) -> FoldingResult:
@@ -64,7 +64,7 @@ class EsmFoldv1(FoldingCallback):
         )
         raw_output = tree_map(lambda x: x.to("cpu"), raw_output)
 
-        pdb_string = esm.esmfold.v1.misc.output_to_pdb(raw_output)[0]
+        pdb_string = esm2.esmfold.v1.misc.output_to_pdb(raw_output)[0]
         atoms: AtomArray = pdb_file_to_atomarray(StringIO(pdb_string))
 
         plddt = raw_output["plddt"]

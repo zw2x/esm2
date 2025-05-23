@@ -7,8 +7,8 @@ from typing import Union
 import torch
 import torch.nn as nn
 
-import esm
-from esm.modules import ContactPredictionHead, ESM1bLayerNorm, RobertaLMHead, TransformerLayer
+import esm2
+from esm2.modules import ContactPredictionHead, ESM1bLayerNorm, RobertaLMHead, TransformerLayer
 
 
 class ESM2(nn.Module):
@@ -17,15 +17,15 @@ class ESM2(nn.Module):
         num_layers: int = 33,
         embed_dim: int = 1280,
         attention_heads: int = 20,
-        alphabet: Union[esm.data.Alphabet, str] = "ESM-1b",
+        alphabet: Union[esm2.data.Alphabet, str] = "ESM-1b",
         token_dropout: bool = True,
     ):
         super().__init__()
         self.num_layers = num_layers
         self.embed_dim = embed_dim
         self.attention_heads = attention_heads
-        if not isinstance(alphabet, esm.data.Alphabet):
-            alphabet = esm.data.Alphabet.from_architecture(alphabet)
+        if not isinstance(alphabet, esm2.data.Alphabet):
+            alphabet = esm2.data.Alphabet.from_architecture(alphabet)
         self.alphabet = alphabet
         self.alphabet_size = len(alphabet)
         self.padding_idx = alphabet.padding_idx

@@ -10,7 +10,7 @@ import requests
 import shutil
 from pathlib import Path
 import torch
-import esm
+import esm2
 
 
 def test_readme_1():
@@ -21,10 +21,10 @@ def test_readme_1():
 
 def test_readme_2():
     import torch
-    import esm
+    import esm2
 
     # Load ESM-2 model
-    model, alphabet = esm.pretrained.esm2_t33_650M_UR50D()
+    model, alphabet = esm2.pretrained.esm2_t33_650M_UR50D()
     batch_converter = alphabet.get_batch_converter()
     model.eval()  # disables dropout for deterministic results
 
@@ -68,9 +68,9 @@ def _run_py_cmd(cmd, **kwargs):
 
 def test_readme_esmfold():
     import torch
-    import esm
+    import esm2
 
-    model = esm.pretrained.esmfold_v1()
+    model = esm2.pretrained.esmfold_v1()
     model = model.eval().cuda()
 
     sequence = "MKTVRQERLKSIVRILERSKEPVSGAQLAEELSVSRQVIVQDIAYLRSLGYNIVATPRGYVLAGG"
@@ -128,8 +128,8 @@ def confirm_all_tensors_equal(local_dir: str, ref_dir: str) -> None:
 
 
 def test_msa_transformers():
-    _test_msa_transformer(*esm.pretrained.esm_msa1_t12_100M_UR50S())
-    _test_msa_transformer(*esm.pretrained.esm_msa1b_t12_100M_UR50S())
+    _test_msa_transformer(*esm2.pretrained.esm_msa1_t12_100M_UR50S())
+    _test_msa_transformer(*esm2.pretrained.esm_msa1b_t12_100M_UR50S())
 
 
 def _test_msa_transformer(model, alphabet):

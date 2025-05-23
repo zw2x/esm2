@@ -2,6 +2,7 @@
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
+import pytest
 
 def _test_esm1b(alphabet):
     import torch
@@ -46,27 +47,27 @@ def _test_esm1b_truncation(alphabet):
 
 
 def test_esm1b_alphabet():
-    import esm
+    import esm2
 
-    _, alphabet = esm.pretrained.esm1b_t33_650M_UR50S()
+    _, alphabet = esm2.pretrained.esm1b_t33_650M_UR50S()
     _test_esm1b(alphabet)
     _test_esm1b_truncation(alphabet)
 
 
 def test_esm1v_alphabet():
-    import esm
+    import esm2
 
-    _, alphabet = esm.pretrained.esm1v_t33_650M_UR90S_1()
+    _, alphabet = esm2.pretrained.esm1v_t33_650M_UR90S_1()
     _test_esm1b(alphabet)
     _test_esm1b_truncation(alphabet)
 
 
 def test_esm1_msa1b_alphabet():
     import torch
-    import esm
+    import esm2
 
     # Load ESM-1b model
-    _, alphabet = esm.pretrained.esm_msa1b_t12_100M_UR50S()
+    _, alphabet = esm2.pretrained.esm_msa1b_t12_100M_UR50S()
     batch_converter = alphabet.get_batch_converter()
 
     data = [

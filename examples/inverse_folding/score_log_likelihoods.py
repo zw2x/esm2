@@ -16,20 +16,20 @@ import torch
 import torch.nn.functional as F
 from tqdm import tqdm
 
-import esm
-import esm.inverse_folding
+import esm2
+import esm2.inverse_folding
 
 
 def score_singlechain_backbone(model, alphabet, args):
     if torch.cuda.is_available() and not args.nogpu:
         model = model.cuda()
         print("Transferred model to GPU")
-    coords, native_seq = esm.inverse_folding.util.load_coords(args.pdbfile, args.chain)
+    coords, native_seq = esm2.inverse_folding.util.load_coords(args.pdbfile, args.chain)
     print('Native sequence loaded from structure file:')
     print(native_seq)
     print('\n')
 
-    ll, _ = esm.inverse_folding.util.score_sequence(
+    ll, _ = esm2.inverse_folding.util.score_sequence(
             model, alphabet, coords, native_seq) 
     print('Native sequence')
     print(f'Log likelihood: {ll:.2f}')
@@ -43,7 +43,7 @@ def score_singlechain_backbone(model, alphabet, args):
     with open(args.outpath, 'w') as fout:
         fout.write('seqid,log_likelihood\n')
         for header, seq in tqdm(seqs.items()):
-            ll, _ = esm.inverse_folding.util.score_sequence(
+            ll, _ = esm2.inverse_folding.util.score_sequence(
                     model, alphabet, coords, str(seq))
             fout.write(header + ',' + str(ll) + '\n')
     print(f'Results saved to {args.outpath}') 
@@ -53,15 +53,15 @@ def score_multichain_backbone(model, alphabet, args):
     if torch.cuda.is_available() and not args.nogpu:
         model = model.cuda()
         print("Transferred model to GPU")
-    structure = esm.inverse_folding.util.load_structure(args.pdbfile)
-    coords, native_seqs = esm.inverse_folding.multichain_util.extract_coords_from_complex(structure)
+    structure = esm2.inverse_folding.util.load_structure(args.pdbfile)
+    coords, native_seqs = esm2.inverse_folding.multichain_util.extract_coords_from_complex(structure)
     target_chain_id = args.chain
     native_seq = native_seqs[target_chain_id]
     print('Native sequence loaded from structure file:')
     print(native_seq)
     print('\n')
 
-    ll, _ = esm.inverse_folding.multichain_util.score_sequence_in_complex(
+    ll, _ = esm2.inverse_folding.multichain_util.score_sequence_in_complex(
             model, alphabet, coords, target_chain_id, native_seq) 
     print('Native sequence')
     print(f'Log likelihood: {ll:.2f}')
@@ -75,7 +75,7 @@ def score_multichain_backbone(model, alphabet, args):
     with open(args.outpath, 'w') as fout:
         fout.write('seqid,log_likelihood\n')
         for header, seq in tqdm(seqs.items()):
-            ll, _ = esm.inverse_folding.multichain_util.score_sequence_in_complex(
+            ll, _ = esm2.inverse_folding.multichain_util.score_sequence_in_complex(
                     model, alphabet, coords, target_chain_id, str(seq))
             fout.write(header + ',' + str(ll) + '\n')
     print(f'Results saved to {args.outpath}') 
@@ -117,7 +117,7 @@ def main():
     
     args = parser.parse_args()
 
-    model, alphabet = esm.pretrained.esm_if1_gvp4_t16_142M_UR50()
+    model, alphabet = esm2.pretrained.esm_if1_gvp4_t16_142M_UR50()
     model = model.eval()
 
     if args.multichain_backbone:

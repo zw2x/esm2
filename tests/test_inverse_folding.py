@@ -12,16 +12,16 @@ def test_esm_if1():
     from tqdm import tqdm
     import torch
     
-    import esm
-    import esm.inverse_folding
+    import esm2
+    import esm2.inverse_folding
 
     example_file = Path(__file__).absolute().parent / "inverse_folding_test_example.json"
     with open(example_file) as f:
         examples = json.load(f)
 
-    model, alphabet = esm.pretrained.esm_if1_gvp4_t16_142M_UR50()
+    model, alphabet = esm2.pretrained.esm_if1_gvp4_t16_142M_UR50()
     model = model.eval()
-    batch_converter = esm.inverse_folding.util.CoordBatchConverter(alphabet)
+    batch_converter = esm2.inverse_folding.util.CoordBatchConverter(alphabet)
 
     with torch.no_grad():
         print('Testing batch inference on 3 examples...')
