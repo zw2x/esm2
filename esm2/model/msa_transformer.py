@@ -17,7 +17,6 @@ from ..modules import (
 from ..axial_attention import RowSelfAttention, ColumnSelfAttention
 
 
-
 class MSATransformer(nn.Module):
     @classmethod
     def add_args(cls, parser):

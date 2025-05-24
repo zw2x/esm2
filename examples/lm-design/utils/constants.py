@@ -8,6 +8,6 @@ from enum import Enum
 
 
 # Note ordering is important, correlates with Designer.py::coords[:, angle-index]
-COORDS_ANGLE_NAMES = ['omega', 'theta', 'phi']
-COORDS4D_NAMES = ['dist'] + COORDS_ANGLE_NAMES
-COORDS6D_NAMES = COORDS4D_NAMES + ['torsion_phi', 'torsion_psi']
+COORDS_ANGLE_NAMES = ["omega", "theta", "phi"]
+COORDS4D_NAMES = ["dist"] + COORDS_ANGLE_NAMES
+COORDS6D_NAMES = COORDS4D_NAMES + ["torsion_phi", "torsion_psi"]

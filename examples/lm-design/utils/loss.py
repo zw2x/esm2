@@ -7,7 +7,12 @@ import torch
 import torch.nn.functional as F
 
 
-def get_cce_loss(probs, labels, mask=None, eps=1e-8,):
+def get_cce_loss(
+    probs,
+    labels,
+    mask=None,
+    eps=1e-8,
+):
     """
     Calculates the categorical cross entropy and averages result.
     Using optional mask to control which labels are included in the loss.
@@ -24,6 +29,6 @@ def get_cce_loss(probs, labels, mask=None, eps=1e-8,):
 
     num_categories = probs.shape[-1]
     labels_onehot = F.one_hot(labels, num_categories)
-    cce_ij = -torch.sum(labels_onehot * torch.log(probs+eps), axis=-1)
+    cce_ij = -torch.sum(labels_onehot * torch.log(probs + eps), axis=-1)
     average_cce = torch.sum(mask * cce_ij, axis=(1, 2)) / torch.sum(mask, axis=(1, 2))
     return average_cce

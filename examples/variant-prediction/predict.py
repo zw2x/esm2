@@ -19,7 +19,7 @@ import numpy as np
 
 
 def remove_insertions(sequence: str) -> str:
-    """ Removes any insertions into the sequence. Needed to load aligned sequences in an MSA. """
+    """Removes any insertions into the sequence. Needed to load aligned sequences in an MSA."""
     # This is an efficient way to delete lowercase characters and insertion characters from a string
     deletekeys = dict.fromkeys(string.ascii_lowercase)
     deletekeys["."] = None
@@ -30,8 +30,8 @@ def remove_insertions(sequence: str) -> str:
 
 
 def read_msa(filename: str, nseq: int) -> List[Tuple[str, str]]:
-    """ Reads the first nseq sequences from an MSA file, automatically removes insertions.
-    
+    """Reads the first nseq sequences from an MSA file, automatically removes insertions.
+
     The input file must be in a3m format (although we use the SeqIO fasta parser)
     for remove_insertions to work properly."""
 

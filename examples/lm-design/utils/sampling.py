@@ -25,27 +25,29 @@ Mental model:
 """
 
 SeedDict = Dict[str, Any]
+
+
 def get_rng_states() -> SeedDict:
-    """ Retrieves a dictionary of seeds for all rngs. """
+    """Retrieves a dictionary of seeds for all rngs."""
     rng_states = {
-        'torch': torch.get_rng_state(),
-        'torch.cuda': torch.cuda.get_rng_state(),
-        'random': random.getstate(),
-        'numpy': np.random.get_state(),
+        "torch": torch.get_rng_state(),
+        "torch.cuda": torch.cuda.get_rng_state(),
+        "random": random.getstate(),
+        "numpy": np.random.get_state(),
     }
     return rng_states
 
 
 def set_rng_states(rng_state: SeedDict):
-    """ Sets seeds of all rngs based on a dictionary of rng states. """
-    torch.set_rng_state(rng_state['torch'])
-    torch.cuda.set_rng_state(rng_state['torch.cuda'])
-    random.setstate(rng_state['random'])
-    np.random.set_state(rng_state['numpy'])
+    """Sets seeds of all rngs based on a dictionary of rng states."""
+    torch.set_rng_state(rng_state["torch"])
+    torch.cuda.set_rng_state(rng_state["torch.cuda"])
+    random.setstate(rng_state["random"])
+    np.random.set_state(rng_state["numpy"])
 
 
 def set_rng_seeds(seed: Union[SeedDict, int]):
-    """ Sets seeds of all rngs based on a single integer """
+    """Sets seeds of all rngs based on a single integer"""
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
     random.seed(seed)
@@ -54,9 +56,9 @@ def set_rng_seeds(seed: Union[SeedDict, int]):
 
 @contextmanager
 def set_rng_seeds_context(seeds: Union[SeedDict, int], disable=False):
-    """ Context manager for temporarily setting seeds.
+    """Context manager for temporarily setting seeds.
     For example, can be used when random sampling to get
-    deterministic outputs for test cases. """
+    deterministic outputs for test cases."""
     if disable:
         yield
     else:
@@ -66,7 +68,7 @@ def set_rng_seeds_context(seeds: Union[SeedDict, int], disable=False):
         set_rng_states(rng_states)
 
 
-def top_p_filtering(logits, top_p=0.0, filter_value=-float('Inf')):
+def top_p_filtering(logits, top_p=0.0, filter_value=-float("Inf")):
     """
     Filter a distribution of logits using nucleus (top-p) filtering
     Args:
@@ -123,14 +125,14 @@ def explore_ratio(probs, x_old, exploration_ratio):
     thresh = 1 - exploration_ratio
 
     # Amount that x_old exceeded thresh, in all batch dims.
-    overage = ((probs * x_old).sum(-1, keepdim=True) - thresh).clamp(0) # [*]
+    overage = ((probs * x_old).sum(-1, keepdim=True) - thresh).clamp(0)  # [*]
 
     # Push down old positions accoring to overage.
-    probs = probs - x_old * overage # [*, K]
+    probs = probs - x_old * overage  # [*, K]
 
     # Scale up all other positions (probs_fresh) so that it sums to overage.
-    probs_fresh = probs * (1-x_old) + 1e-8 # [*, K]
-    probs = probs + probs_fresh * overage / probs_fresh.sum(-1, keepdim=True) # [*, K]
+    probs_fresh = probs * (1 - x_old) + 1e-8  # [*, K]
+    probs = probs + probs_fresh * overage / probs_fresh.sum(-1, keepdim=True)  # [*, K]
 
     return probs
 
@@ -138,15 +140,14 @@ def explore_ratio(probs, x_old, exploration_ratio):
 def modify_logits(
     # Input:
     logits,
-
     # Settings:
-    x_old = None,
-    mask = None,
-    force_propose_new_tokens = None,
-    nucleus_sampling_rate = None,
-    epsilon_force_mutation_ratio = None,
-    epsilon_greedy_bypass = None,
-    temperature = None,
+    x_old=None,
+    mask=None,
+    force_propose_new_tokens=None,
+    nucleus_sampling_rate=None,
+    epsilon_force_mutation_ratio=None,
+    epsilon_greedy_bypass=None,
+    temperature=None,
 ):
     """
     General purpose modifier of logits/logprobs.
@@ -161,7 +162,7 @@ def modify_logits(
         epsilon_force_mutation_ratio (float in range [0, 1]): Fraction of eps-force to use.
         epsilon_greedy_bypass (float in range [0, 1]): Fraction of epsilon greedy to use.
         temperature (float): The temperature used for conversion of logits -> probs in Softmax operation.
-        
+
     Returns:
         logprobs [*, K].  This is good for numerical precision issues, and is a bit nicer than logits.
     """
@@ -175,27 +176,29 @@ def modify_logits(
     # Handle optional specification of mask, which will clear some positions.
     if mask is None:
         mask = torch.ones(K, device=logprobs.device).bool()
-    logits = logprobs.masked_fill(~mask, -float('inf'))
+    logits = logprobs.masked_fill(~mask, -float("inf"))
 
     # Do logprob-based modifications.
     if force_propose_new_tokens:
-        logits = logits.masked_fill(x_old.bool(), -float('inf'))
+        logits = logits.masked_fill(x_old.bool(), -float("inf"))
     if nucleus_sampling_rate is not None:
         logits = top_p_filtering(logits=logits, top_p=nucleus_sampling_rate)
 
     # Convert to probs for prob-based modifications.
-    probs = F.softmax(logits/temperature, dim=-1)
+    probs = F.softmax(logits / temperature, dim=-1)
 
     # Do prob-based modifications.
     if epsilon_force_mutation_ratio is not None:
         probs = explore_ratio(probs, x_old, epsilon_force_mutation_ratio)
-    if epsilon_greedy_bypass is not None and torch.rand(1) < epsilon_greedy_bypass: # do only for valid AA's?
+    if (
+        epsilon_greedy_bypass is not None and torch.rand(1) < epsilon_greedy_bypass
+    ):  # do only for valid AA's?
         probs = torch.ones_like(probs) / K
 
     # 4. probs -> logits
     # NOTE: This eps used to be way too high.
     # Keep in mind that eps needs to be lower than 1e-32 for proper test case matching
     # in some cases, when adding the global EPS.
-    log_probs =  (probs + 1e-100).log()
-    logits = log_probs.masked_fill(~mask, -float('inf'))
+    log_probs = (probs + 1e-100).log()
+    logits = log_probs.masked_fill(~mask, -float("inf"))
     return logits

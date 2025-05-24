@@ -16,7 +16,6 @@ import time
 logger = logging.getLogger(__name__)
 
 
-
 class TimerContext(AbstractContextManager):
     """
     Used to measure time and log if time threshold passed.
@@ -25,6 +24,7 @@ class TimerContext(AbstractContextManager):
        some_long_operation()  # will log warning in case this takes more than 10 seconds
     print(tc.elapsed) # elapsed data-member contains elapsed time in secs
     """
+
     def __init__(self, tag="N/A", threshold=None):
         super().__init__()
         self.tag = tag
@@ -35,7 +35,7 @@ class TimerContext(AbstractContextManager):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.elapsed = (time.time() - self.start)
+        self.elapsed = time.time() - self.start
         self.elapsed_rounded = round(self.elapsed, 2)
         if self.threshold is not None and self.elapsed > self.threshold:
             logger.warning(f"Timer passed threshold: {self.tag} -- {self.elapsed_rounded}")

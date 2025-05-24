@@ -26,9 +26,7 @@ from language import (
 
 def scaffolding_ace2() -> ProgramNode:
     binding_site_atoms: AtomArray = pdb_file_to_atomarray(fetch("6m0j", format="pdb"))
-    binding_site_atoms = get_atomarray_in_residue_range(
-        binding_site_atoms, start=23, end=42
-    )
+    binding_site_atoms = get_atomarray_in_residue_range(binding_site_atoms, start=23, end=42)
     binding_site_sequence: str = sequence_from_atomarray(binding_site_atoms)
     print(binding_site_sequence)
 
@@ -54,5 +52,5 @@ def scaffolding_ace2() -> ProgramNode:
                 energy_function_weights=[1.0, 10.0, 10.0],
             ),
             ProgramNode(sequence_segment=follower_amino_acid_sequence),
-        ]
+        ],
     )

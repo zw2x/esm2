@@ -28,11 +28,11 @@ class ProgramNode:
         self.sequence_segment: SequenceSegmentFactory = sequence_segment
         self.children_are_different_chains: bool = children_are_different_chains
         self.energy_function_terms: List[energy_function_terms] = energy_function_terms
-        self.energy_function_weights: List[
-            float
-        ] = energy_function_weights if energy_function_weights else [
-            1.0 for _ in self.energy_function_terms
-        ]
+        self.energy_function_weights: List[float] = (
+            energy_function_weights
+            if energy_function_weights
+            else [1.0 for _ in self.energy_function_terms]
+        )
         if self.energy_function_weights:
             assert len(self.energy_function_terms) == len(
                 self.energy_function_weights
@@ -58,9 +58,7 @@ class ProgramNode:
             (
                 sequence_segment,
                 residue_indices_segment,
-            ) = child.get_sequence_and_set_residue_index_ranges(
-                residue_index_offset=offset
-            )
+            ) = child.get_sequence_and_set_residue_index_ranges(residue_index_offset=offset)
             sequence += sequence_segment
             residue_indices += residue_indices_segment
             offset = residue_indices[-1] + 1
@@ -92,18 +90,14 @@ class ProgramNode:
                 weight,
                 partial(term.compute, self),
             )
-            for weight, term in zip(
-                self.energy_function_weights, self.energy_function_terms
-            )
+            for weight, term in zip(self.energy_function_weights, self.energy_function_terms)
         ]
 
         if self.is_leaf_node():
             return terms
 
         for i, child in enumerate(self.children):
-            terms += child.get_energy_term_functions(
-                name_prefix=name_prefix + f".n{i+1}"
-            )
+            terms += child.get_energy_term_functions(name_prefix=name_prefix + f".n{i+1}")
 
         return terms
 
@@ -111,12 +105,8 @@ class ProgramNode:
         if self.is_leaf_node():
             return self.sequence_segment.mutate()
 
-        weights = np.array(
-            [float(child.num_mutation_candidates()) for child in self.children]
-        )
-        assert (
-            weights.sum() > 0
-        ), "Some mutations should be possible if mutate() was called."
+        weights = np.array([float(child.num_mutation_candidates()) for child in self.children])
+        assert weights.sum() > 0, "Some mutations should be possible if mutate() was called."
         child_to_mutate = np.random.choice(self.children, p=weights / weights.sum())
         child_to_mutate.mutate()
 

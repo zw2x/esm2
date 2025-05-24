@@ -67,24 +67,15 @@ class TransformerDecoder(nn.Module):
         )
 
         self.layers = nn.ModuleList([])
-        self.layers.extend(
-            [
-                self.build_decoder_layer(args)
-                for _ in range(args.decoder_layers)
-            ]
-        )
+        self.layers.extend([self.build_decoder_layer(args) for _ in range(args.decoder_layers)])
         self.num_layers = len(self.layers)
         self.layer_norm = nn.LayerNorm(embed_dim)
 
         self.build_output_projection(args, dictionary)
 
     def build_output_projection(self, args, dictionary):
-        self.output_projection = nn.Linear(
-            args.decoder_embed_dim, len(dictionary), bias=False
-        )
-        nn.init.normal_(
-            self.output_projection.weight, mean=0, std=args.decoder_embed_dim ** -0.5
-        )
+        self.output_projection = nn.Linear(args.decoder_embed_dim, len(dictionary), bias=False)
+        nn.init.normal_(self.output_projection.weight, mean=0, std=args.decoder_embed_dim**-0.5)
 
     def build_decoder_layer(self, args):
         return TransformerDecoderLayer(args)
@@ -122,7 +113,7 @@ class TransformerDecoder(nn.Module):
 
         if not features_only:
             x = self.output_layer(x)
-        x = x.transpose(1, 2) # B x T x C -> B x C x T
+        x = x.transpose(1, 2)  # B x T x C -> B x C x T
         return x, extra
 
     def extract_features(
@@ -148,16 +139,12 @@ class TransformerDecoder(nn.Module):
         padding_mask: Optional[Tensor] = None
         if encoder_out is not None and len(encoder_out["encoder_out"]) > 0:
             enc = encoder_out["encoder_out"][0]
-            assert (
-                enc.size()[1] == bs
-            ), f"Expected enc.shape == (t, {bs}, c) got {enc.shape}"
+            assert enc.size()[1] == bs, f"Expected enc.shape == (t, {bs}, c) got {enc.shape}"
         if encoder_out is not None and len(encoder_out["encoder_padding_mask"]) > 0:
             padding_mask = encoder_out["encoder_padding_mask"][0]
 
         # embed positions
-        positions = self.embed_positions(
-            prev_output_tokens
-        )
+        positions = self.embed_positions(prev_output_tokens)
 
         if incremental_state is not None:
             prev_output_tokens = prev_output_tokens[:, -1:]
@@ -221,8 +208,6 @@ class TransformerDecoder(nn.Module):
             or (not self._future_mask.device == tensor.device)
             or self._future_mask.size(0) < dim
         ):
-            self._future_mask = torch.triu(
-                fill_with_neg_inf(torch.zeros([dim, dim])), 1
-            )
+            self._future_mask = torch.triu(fill_with_neg_inf(torch.zeros([dim, dim])), 1)
         self._future_mask = self._future_mask.to(tensor)
         return self._future_mask[:dim, :dim]

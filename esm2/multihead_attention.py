@@ -395,9 +395,11 @@ class MultiheadAttention(nn.Module):
         attn = self.out_proj(attn)
         attn_weights: Optional[Tensor] = None
         if need_weights:
-            attn_weights = attn_weights_float.view(
-                bsz, self.num_heads, tgt_len, src_len
-            ).type_as(attn).transpose(1, 0)
+            attn_weights = (
+                attn_weights_float.view(bsz, self.num_heads, tgt_len, src_len)
+                .type_as(attn)
+                .transpose(1, 0)
+            )
             if not need_head_weights:
                 # average attention weights over heads
                 attn_weights = attn_weights.mean(dim=0)

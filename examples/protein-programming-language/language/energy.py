@@ -72,9 +72,7 @@ class SymmetryRing(EnergyTerm):
 
 
 def get_backbone_atoms(atoms: AtomArray) -> AtomArray:
-    return atoms[
-        (atoms.atom_name == "CA") | (atoms.atom_name == "N") | (atoms.atom_name == "C")
-    ]
+    return atoms[(atoms.atom_name == "CA") | (atoms.atom_name == "N") | (atoms.atom_name == "C")]
 
 
 def _is_Nx3(array: np.ndarray) -> bool:
@@ -139,9 +137,7 @@ def hydrophobic_score(
         )
 
     # TODO(scandido): Resolve the float/bool thing going on here.
-    hydrophobic_surf = np.logical_and(
-        selection_mask * hydrophobic_mask, sasa(atom_array)
-    )
+    hydrophobic_surf = np.logical_and(selection_mask * hydrophobic_mask, sasa(atom_array))
     # TODO(brianhie): Figure out how to handle divide-by-zero.
     return sum(hydrophobic_surf) / sum(selection_mask * hydrophobic_mask)
 

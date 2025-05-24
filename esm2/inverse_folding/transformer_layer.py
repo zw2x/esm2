@@ -121,9 +121,7 @@ class TransformerDecoderLayer(nn.Module):
             (default: False).
     """
 
-    def __init__(
-        self, args, no_encoder_attn=False, add_bias_kv=False, add_zero_attn=False
-    ):
+    def __init__(self, args, no_encoder_attn=False, add_bias_kv=False, add_zero_attn=False):
         super().__init__()
         self.embed_dim = args.decoder_embed_dim
         self.dropout_module = nn.Dropout(args.dropout)
@@ -149,9 +147,7 @@ class TransformerDecoderLayer(nn.Module):
             self.encoder_attn_layer_norm = nn.LayerNorm(self.embed_dim)
 
         self.ffn_layernorm = (
-            LayerNorm(args.decoder_ffn_embed_dim)
-            if getattr(args, "scale_fc", False)
-            else None
+            LayerNorm(args.decoder_ffn_embed_dim) if getattr(args, "scale_fc", False) else None
         )
         self.w_resid = (
             nn.Parameter(
@@ -182,9 +178,7 @@ class TransformerDecoderLayer(nn.Module):
     def build_fc2(self, input_dim, output_dim):
         return nn.Linear(input_dim, output_dim)
 
-    def build_self_attention(
-        self, embed_dim, args, add_bias_kv=False, add_zero_attn=False
-    ):
+    def build_self_attention(self, embed_dim, args, add_bias_kv=False, add_zero_attn=False):
         return MultiheadAttention(
             embed_dim,
             args.decoder_attention_heads,

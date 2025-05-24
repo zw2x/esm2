@@ -14,8 +14,8 @@ from language import (
 
 
 def secondary_structure(
-    node1_sse: str = 'a',
-    node2_sse: str = 'b',
+    node1_sse: str = "a",
+    node2_sse: str = "b",
 ) -> ProgramNode:
     """
     Free hallucinates a protein while controlling the secondary structure
@@ -26,15 +26,15 @@ def secondary_structure(
         sequence_segment=FixedLengthSequenceSegment(50),
         energy_function_terms=[
             MatchSecondaryStructure(node1_sse),
-            #TODO(brianhie): Add globularity here.
-        ]
+            # TODO(brianhie): Add globularity here.
+        ],
     )
     node2 = ProgramNode(
         sequence_segment=FixedLengthSequenceSegment(50),
         energy_function_terms=[
             MatchSecondaryStructure(node2_sse),
-            #TODO(brianhie): Add globularity here.
-        ]
+            # TODO(brianhie): Add globularity here.
+        ],
     )
 
     return ProgramNode(
@@ -43,5 +43,8 @@ def secondary_structure(
             MaximizePLDDT(),
             MinimizeSurfaceHydrophobics(),
         ],
-        children=[node1, node2,],
+        children=[
+            node1,
+            node2,
+        ],
     )

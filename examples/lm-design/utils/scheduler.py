@@ -10,10 +10,9 @@ import torch
 
 SCHEDULER_REPOSITORY = {}
 
+
 class Scheduler:
-    def __init__(
-        self, optimizer: Optional[Any], scheduler: str, initial: float, **schedulerspec
-    ):
+    def __init__(self, optimizer: Optional[Any], scheduler: str, initial: float, **schedulerspec):
         if optimizer is None:
             # Dummy optimizer to wrap with lr_scheduler
             dummy = torch.tensor([], requires_grad=True)
@@ -22,9 +21,7 @@ class Scheduler:
         else:
             self.dummy_optimizer = None
         self.name = scheduler
-        self._scheduler = getattr(torch.optim.lr_scheduler, self.name)(
-            optimizer, **schedulerspec
-        )
+        self._scheduler = getattr(torch.optim.lr_scheduler, self.name)(optimizer, **schedulerspec)
         self.initial = initial
 
     def step(self):
@@ -35,21 +32,26 @@ class Scheduler:
     def __call__(self):
         return self._scheduler.get_last_lr()[0]
 
+
 SchedulerSpecDict = dict
 SchedulerSpec = Union[float, str, SchedulerSpecDict]
 
-class ConstantSchedule():
+
+class ConstantSchedule:
     """
     Schedule that returns a constant value, defined at init.
     Pickle-able, as opposed to `lambda: value`.
     """
+
     def __init__(self, value: Number):
         self.value = value
+
     def __call__(self):
         return self.value
 
+
 def to_scheduler(sspec: SchedulerSpec):
-    """ Helper for initializing schedulers from config. """
+    """Helper for initializing schedulers from config."""
     if isinstance(sspec, str):
         sspec = SCHEDULER_REPOSITORY[sspec]
         optimizer = None
@@ -63,6 +65,7 @@ def to_scheduler(sspec: SchedulerSpec):
         return ConstantSchedule(sspec)
     else:
         return Scheduler(optimizer, **sspec)
+
 
 def set_scheduler_repo(repo: dict):
     global SCHEDULER_REPOSITORY

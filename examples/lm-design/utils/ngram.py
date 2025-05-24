@@ -14,8 +14,29 @@ import numpy as np
 
 
 # Code for loading constants for preprocessing
-seq_encode = ['L', 'A', 'G', 'V', 'S', 'E', 'R', 'T', 'I', 'D', 'P', 'K', 'Q', 'N', 'F', 'Y', 'M', 'H', 'W', 'C']
-BASE = Path('./utils/ngram_stats/')
+seq_encode = [
+    "L",
+    "A",
+    "G",
+    "V",
+    "S",
+    "E",
+    "R",
+    "T",
+    "I",
+    "D",
+    "P",
+    "K",
+    "Q",
+    "N",
+    "F",
+    "Y",
+    "M",
+    "H",
+    "W",
+    "C",
+]
+BASE = Path("./utils/ngram_stats/")
 ngram_list = []
 for fn in ["monogram_seg.p", "bigram_seg.p", "trigram_seg.p", "quadgram_seg.p"]:
     with open(BASE / fn, "rb") as f:
@@ -47,27 +68,28 @@ for i, ngram_dict in enumerate(ngram_list):
 
     ngram_list[i] = idx_dict
 
+
 def encode(seq):
     if isinstance(seq, np.ndarray):
         return seq  # already encoded
     elif isinstance(seq, str):
         return np.array([seq_encode.index(AA) for AA in seq])
     else:
-        raise ValueError(f'Unknown seq type {seq}')
+        raise ValueError(f"Unknown seq type {seq}")
 
 
 def compute_kl_div(seq, order):
-   # Inputs Args:
-   # Seq: N dimensional numpy array consisting of numbers between 0 and 19 (inclusive)
-   # Order: integer for order of ngram used (should be between 0 and 3 for now)
-   order_dict = ngram_list[order-1]
-   seq = encode(seq) # this is not the problem.
- 
-   # Compute ngram frequency rate for the input sequence
-   tup_dict = Counter(ngrams(seq,n=order))
-   total = sum(tup_dict.values())
-   tup_dict = {k: v / total for k, v in tup_dict.items()}
-  
-   p = np.array(list(tup_dict.values())) # observed probabilities of ngrams
-   q = np.array([order_dict.get(k, 1e-5) for k in tup_dict.keys()]) # learned ngram probabilities
-   return np.sum(p * np.log(p/q))
+    # Inputs Args:
+    # Seq: N dimensional numpy array consisting of numbers between 0 and 19 (inclusive)
+    # Order: integer for order of ngram used (should be between 0 and 3 for now)
+    order_dict = ngram_list[order - 1]
+    seq = encode(seq)  # this is not the problem.
+
+    # Compute ngram frequency rate for the input sequence
+    tup_dict = Counter(ngrams(seq, n=order))
+    total = sum(tup_dict.values())
+    tup_dict = {k: v / total for k, v in tup_dict.items()}
+
+    p = np.array(list(tup_dict.values()))  # observed probabilities of ngrams
+    q = np.array([order_dict.get(k, 1e-5) for k in tup_dict.keys()])  # learned ngram probabilities
+    return np.sum(p * np.log(p / q))

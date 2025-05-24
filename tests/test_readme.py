@@ -32,8 +32,11 @@ def test_readme_2():
     data = [
         ("protein1", "MKTVRQERLKSIVRILERSKEPVSGAQLAEELSVSRQVIVQDIAYLRSLGYNIVATPRGYVLAGG"),
         ("protein2", "KALTARQQEVFDLIRDHISQTGMPPTRAEIAQRLGFRSPNAAEEHLKALARKGVIEIVSGASRGIRLLQEE"),
-        ("protein2 with mask","KALTARQQEVFDLIRD<mask>ISQTGMPPTRAEIAQRLGFRSPNAAEEHLKALARKGVIEIVSGASRGIRLLQEE"),
-        ("protein3",  "K A <mask> I S Q"),
+        (
+            "protein2 with mask",
+            "KALTARQQEVFDLIRD<mask>ISQTGMPPTRAEIAQRLGFRSPNAAEEHLKALARKGVIEIVSGASRGIRLLQEE",
+        ),
+        ("protein3", "K A <mask> I S Q"),
     ]
     batch_labels, batch_strs, batch_tokens = batch_converter(data)
     batch_lens = (batch_tokens != alphabet.padding_idx).sum(1)
@@ -52,12 +55,13 @@ def test_readme_2():
     # Look at the unsupervised self-attention map contact predictions
     try:
         import matplotlib.pyplot as plt
+
         for (_, seq), tokens_len, attention_contacts in zip(data, batch_lens, results["contacts"]):
-            plt.matshow(attention_contacts[: tokens_len, : tokens_len])
+            plt.matshow(attention_contacts[:tokens_len, :tokens_len])
             plt.title(seq)
             plt.show()
     except ImportError:
-        pass # dont need mpl to run test
+        pass  # dont need mpl to run test
 
 
 def _run_py_cmd(cmd, **kwargs):
@@ -82,11 +86,11 @@ def test_readme_esmfold():
     with open("result.pdb", "w") as f:
         f.write(output)
 
-    #import biotite.structure.io as bsio
-    #struct = bsio.load_structure("result.pdb", extra_fields=["b_factor"])
-    #print(struct.b_factor.mean())  # this will be the pLDDT
+    # import biotite.structure.io as bsio
+    # struct = bsio.load_structure("result.pdb", extra_fields=["b_factor"])
+    # print(struct.b_factor.mean())  # this will be the pLDDT
     with open("result.pdb") as f:
-        lines = [line for line in f.readlines() if line.startswith('ATOM')]
+        lines = [line for line in f.readlines() if line.startswith("ATOM")]
     bfactors = [float(line[60:66]) for line in lines]
     assert torch.allclose(torch.Tensor(bfactors).mean(), torch.Tensor([88.3]), atol=1e-1)
 

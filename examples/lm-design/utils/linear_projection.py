@@ -22,17 +22,17 @@ from typing import Dict, Optional, List, Callable, Union
 import math
 
 BinningScheme = namedtuple(
-    'BinningScheme',
+    "BinningScheme",
     [
-        'N_BINS',
-        'CUTOFF_BIN',
-        'MIN_DIST',
-        'MAX_DIST',
-        'CONTACT_DIST',
-        'THETA_BINS',
-        'PHI_BINS',
-        'OMEGA_BINS',
-        'TORSION_BINS',
+        "N_BINS",
+        "CUTOFF_BIN",
+        "MIN_DIST",
+        "MAX_DIST",
+        "CONTACT_DIST",
+        "THETA_BINS",
+        "PHI_BINS",
+        "OMEGA_BINS",
+        "TORSION_BINS",
     ],
 )
 LinearProjectionDist_1A = BinningScheme(
@@ -47,7 +47,7 @@ LinearProjectionDist_1A = BinningScheme(
     TORSION_BINS=50,
 )
 BIN_FLAG_TO_ENUM = {
-    'LinearProjectionDist_1A': LinearProjectionDist_1A,
+    "LinearProjectionDist_1A": LinearProjectionDist_1A,
 }
 
 logger = logging.getLogger(__name__)
@@ -64,24 +64,24 @@ def extract_features(
     Inflexible way of dealing with the mess of inputs with cls tokens,
     need embedding without, and LSTM doesnt want cls token in the first place.
     """
-    
+
     out_start_idx = 1 if has_cls else 0
     out_end_idx = -1 if has_eos else None
-    inp = inp.argmax(dim=-1) # output [B, T]
+    inp = inp.argmax(dim=-1)  # output [B, T]
     result = model(inp, need_head_weights=need_head_weights)
     attentions = result["attentions"]
 
     batch, layer, head, seqlen, seqlen2 = attentions.size()
     assert seqlen == seqlen2
-    attentions = attentions.reshape(
-        batch, layer * head, seqlen, seqlen
-    )
+    attentions = attentions.reshape(batch, layer * head, seqlen, seqlen)
     emb = result["logits"]
 
-    return emb[:, out_start_idx:out_end_idx], \
-        attentions[:, :, out_start_idx:out_end_idx, out_start_idx:out_end_idx]
+    return (
+        emb[:, out_start_idx:out_end_idx],
+        attentions[:, :, out_start_idx:out_end_idx, out_start_idx:out_end_idx],
+    )
 
-    
+
 class LinearProjectionDistogramModel(nn.Module):
     """
     This model regresses angles and distances from the attention maps of the LM
@@ -91,12 +91,12 @@ class LinearProjectionDistogramModel(nn.Module):
         super().__init__()
         self.base_model = None  # To be initialized later
         self.num_heads = 20 * 33
-        self.bin_enum = BIN_FLAG_TO_ENUM['LinearProjectionDist_1A']
+        self.bin_enum = BIN_FLAG_TO_ENUM["LinearProjectionDist_1A"]
         self._s1 = self.bin_enum.N_BINS
         self._s2 = self._s1 + self.bin_enum.THETA_BINS
         self._s3 = self._s2 + self.bin_enum.PHI_BINS
         self._s4 = self._s3 + self.bin_enum.OMEGA_BINS
-        
+
         conv_in_channels = self.num_heads
 
         self.conv1 = torch.nn.Conv2d(
@@ -115,24 +115,20 @@ class LinearProjectionDistogramModel(nn.Module):
             padding=0,
         )
 
-
     def forward(self, src_tokens, **kwargs):
         _, attentions_asym = extract_features(self.base_model, src_tokens, need_head_weights=True)
-            
+
         def symmetrize(contacts, scale=1.0):
             return scale * (contacts + contacts.transpose(-1, -2))
-             
+
         attentions_sym = symmetrize(attentions_asym)
-        
+
         # [B, C, N, N] -> [B, output_channels, N, N]
         out1 = self.conv1(attentions_sym)
         out2 = self.conv2(attentions_asym)
         return {
-            'logits':       out1[:, :self.bin_enum.N_BINS:,    :, :],
-            'omega_logits': out1[:, self.bin_enum.N_BINS:,     :, :],
-            'theta_logits': out2[:, :self.bin_enum.THETA_BINS, :, :],
-            'phi_logits':   out2[:, self.bin_enum.THETA_BINS:, :, :],
+            "logits": out1[:, : self.bin_enum.N_BINS :, :, :],
+            "omega_logits": out1[:, self.bin_enum.N_BINS :, :, :],
+            "theta_logits": out2[:, : self.bin_enum.THETA_BINS, :, :],
+            "phi_logits": out2[:, self.bin_enum.THETA_BINS :, :, :],
         }
-
-
-
