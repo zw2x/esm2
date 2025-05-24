@@ -80,13 +80,15 @@ def metropolis_hastings_step(
         candidate_energy=candidate_energy,
         candidate_energy_term_fn_values=candidate_energy_term_fn_values,
         current_energy=candidate_energy if accept_candidate else state.current_energy,
-        current_energy_term_fn_values=candidate_energy_term_fn_values
-        if accept_candidate
-        else state.current_energy_term_fn_values,
+        current_energy_term_fn_values=(
+            candidate_energy_term_fn_values
+            if accept_candidate
+            else state.current_energy_term_fn_values
+        ),
         best_energy=candidate_energy if best else state.best_energy,
-        best_energy_term_fn_values=candidate_energy_term_fn_values
-        if best
-        else state.best_energy_term_fn_values,
+        best_energy_term_fn_values=(
+            candidate_energy_term_fn_values if best else state.best_energy_term_fn_values
+        ),
     )
 
 

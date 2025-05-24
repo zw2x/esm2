@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 import pytest
 
+
 def _test_esm1b(alphabet):
     import torch
 

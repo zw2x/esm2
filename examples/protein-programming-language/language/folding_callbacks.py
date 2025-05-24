@@ -60,7 +60,8 @@ class EsmFoldv1(FoldingCallback):
         residue_indices = np.array(residue_indices) - 1
 
         raw_output = self.model.infer(
-            sequence, residx=torch.Tensor(residue_indices).long().reshape(1, -1),
+            sequence,
+            residx=torch.Tensor(residue_indices).long().reshape(1, -1),
         )
         raw_output = tree_map(lambda x: x.to("cpu"), raw_output)
 

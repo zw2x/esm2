@@ -13,7 +13,7 @@ with open("README.md") as f:
     readme = f.read()
 
 extras = {
-    "esmfold": [ # OpenFold does not automatically pip install requirements, so we add them here.
+    "esmfold": [  # OpenFold does not automatically pip install requirements, so we add them here.
         "biopython",
         # "deepspeed==0.5.9",
         "dm-tree",
@@ -30,7 +30,7 @@ sources = {
     "esm2.model": "esm2/model",
     "esm2.inverse_folding": "esm2/inverse_folding",
     "esm2.esmfold.v1": "esm2/esmfold/v1",
-    "esm2.scripts": "scripts"
+    "esm2.scripts": "scripts",
 }
 
 setup(

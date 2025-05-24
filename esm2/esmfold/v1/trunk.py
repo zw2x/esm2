@@ -154,7 +154,9 @@ class FoldingTrunk(nn.Module):
         # where the chunk_size is the size of the chunks, so 128 would mean to parse 128-lengthed chunks.
         self.chunk_size = chunk_size
 
-    def forward(self, seq_feats, pair_feats, true_aa, residx, mask, no_recycles: T.Optional[int] = None):
+    def forward(
+        self, seq_feats, pair_feats, true_aa, residx, mask, no_recycles: T.Optional[int] = None
+    ):
         """
         Inputs:
           seq_feats:     B x L x C            tensor of sequence features
@@ -174,7 +176,9 @@ class FoldingTrunk(nn.Module):
             no_recycles = self.cfg.max_recycles
         else:
             assert no_recycles >= 0, "Number of recycles must not be negative."
-            no_recycles += 1  # First 'recycle' is just the standard forward pass through the model.
+            no_recycles += (
+                1  # First 'recycle' is just the standard forward pass through the model.
+            )
 
         def trunk_iter(s, z, residx, mask):
             z = z + self.pairwise_positional_embedding(residx, mask=mask)

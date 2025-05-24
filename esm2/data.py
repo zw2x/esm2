@@ -50,9 +50,7 @@ class FastaBatchedDataset(object):
 
         _flush_current_seq()
 
-        assert len(set(sequence_labels)) == len(
-            sequence_labels
-        ), "Found duplicate sequence labels"
+        assert len(set(sequence_labels)) == len(sequence_labels), "Found duplicate sequence labels"
 
         return cls(sequence_labels, sequence_strs)
 
@@ -118,7 +116,7 @@ class Alphabet(object):
         self.cls_idx = self.get_idx("<cls>")
         self.mask_idx = self.get_idx("<mask>")
         self.eos_idx = self.get_idx("<eos>")
-        self.all_special_tokens = ['<eos>', '<unk>', '<pad>', '<cls>', '<mask>']
+        self.all_special_tokens = ["<eos>", "<unk>", "<pad>", "<cls>", "<mask>"]
         self.unique_no_split_tokens = self.all_toks
 
     def __len__(self):
@@ -234,9 +232,11 @@ class Alphabet(object):
             return list(
                 itertools.chain.from_iterable(
                     (
-                        self._tokenize(token)
-                        if token not in self.unique_no_split_tokens
-                        else [token]
+                        (
+                            self._tokenize(token)
+                            if token not in self.unique_no_split_tokens
+                            else [token]
+                        )
                         for token in tokenized_text
                     )
                 )
@@ -265,7 +265,9 @@ class BatchConverter(object):
         batch_labels, seq_str_list = zip(*raw_batch)
         seq_encoded_list = [self.alphabet.encode(seq_str) for seq_str in seq_str_list]
         if self.truncation_seq_length:
-            seq_encoded_list = [seq_str[:self.truncation_seq_length] for seq_str in seq_encoded_list]
+            seq_encoded_list = [
+                seq_str[: self.truncation_seq_length] for seq_str in seq_encoded_list
+            ]
         max_len = max(len(seq_encoded) for seq_encoded in seq_encoded_list)
         tokens = torch.empty(
             (
@@ -288,11 +290,12 @@ class BatchConverter(object):
             seq = torch.tensor(seq_encoded, dtype=torch.int64)
             tokens[
                 i,
-                int(self.alphabet.prepend_bos) : len(seq_encoded)
-                + int(self.alphabet.prepend_bos),
+                int(self.alphabet.prepend_bos) : len(seq_encoded) + int(self.alphabet.prepend_bos),
             ] = seq
             if self.alphabet.append_eos:
-                tokens[i, len(seq_encoded) + int(self.alphabet.prepend_bos)] = self.alphabet.eos_idx
+                tokens[i, len(seq_encoded) + int(self.alphabet.prepend_bos)] = (
+                    self.alphabet.eos_idx
+                )
 
         return labels, strs, tokens
 
@@ -459,7 +462,7 @@ class ESMStructuralSplitDataset(torch.utils.data.Dataset):
         return len(self.names)
 
     def _check_exists(self) -> bool:
-        for (_, _, filename, _) in self.file_list:
+        for _, _, filename, _ in self.file_list:
             fpath = os.path.join(self.base_path, filename)
             if not os.path.exists(fpath) or not os.path.isdir(fpath):
                 return False

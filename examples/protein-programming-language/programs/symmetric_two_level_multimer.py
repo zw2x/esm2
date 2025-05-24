@@ -30,6 +30,7 @@ def symmetric_two_level_multimer(
 
     # The basic repeated unit.
     protomer_sequence = FixedLengthSequenceSegment(protomer_sequence_length)
+
     def _make_protomer_node():
         return ProgramNode(sequence_segment=protomer_sequence)
 
@@ -40,11 +41,11 @@ def symmetric_two_level_multimer(
                 SymmetryRing(),
                 MaximizeGlobularity(),
             ],
-            energy_function_weights=[1., 0.05,],
-            children=[
-                _make_protomer_node()
-                for _ in range(num_protomers_per_chain)
+            energy_function_weights=[
+                1.0,
+                0.05,
             ],
+            children=[_make_protomer_node() for _ in range(num_protomers_per_chain)],
         )
 
     # Chains are symmetrically combined into a multimer.
@@ -55,11 +56,6 @@ def symmetric_two_level_multimer(
             SymmetryRing(),
             MinimizeSurfaceHydrophobics(),
         ],
-        children=[
-            _make_chain_node()
-            for _ in range(num_chains)
-        ],
+        children=[_make_chain_node() for _ in range(num_chains)],
         children_are_different_chains=True,
     )
-
-

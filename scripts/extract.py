@@ -74,7 +74,9 @@ def run(args):
     dataset = FastaBatchedDataset.from_file(args.fasta_file)
     batches = dataset.get_batch_indices(args.toks_per_batch, extra_toks_per_seq=1)
     data_loader = torch.utils.data.DataLoader(
-        dataset, collate_fn=alphabet.get_batch_converter(args.truncation_seq_length), batch_sampler=batches
+        dataset,
+        collate_fn=alphabet.get_batch_converter(args.truncation_seq_length),
+        batch_sampler=batches,
     )
     print(f"Read {args.fasta_file} with {len(dataset)} sequences")
 
@@ -123,7 +125,7 @@ def run(args):
                         layer: t[i, 0].clone() for layer, t in representations.items()
                     }
                 if return_contacts:
-                    result["contacts"] = contacts[i, : truncate_len, : truncate_len].clone()
+                    result["contacts"] = contacts[i, :truncate_len, :truncate_len].clone()
 
                 torch.save(
                     result,
@@ -135,6 +137,7 @@ def main():
     parser = create_parser()
     args = parser.parse_args()
     run(args)
+
 
 if __name__ == "__main__":
     main()

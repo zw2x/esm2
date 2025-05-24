@@ -5,7 +5,7 @@
 
 
 from pathlib import Path
-import sys,os
+import sys, os
 import argparse
 import logging
 import sys
@@ -92,7 +92,11 @@ def create_parser():
         "-o", "--pdb", help="Path to output PDB directory", type=Path, required=True
     )
     parser.add_argument(
-        "-m", "--model-dir", help="Parent path to Pretrained ESM data directory. ", type=Path, default=None
+        "-m",
+        "--model-dir",
+        help="Parent path to Pretrained ESM data directory. ",
+        type=Path,
+        default=None,
     )
     parser.add_argument(
         "--num-recycles",
@@ -141,7 +145,6 @@ def run(args):
         torch.hub.set_dir(args.model_dir)
 
     model = esm2.pretrained.esmfold_v1()
-
 
     model = model.eval()
     model.set_chunk_size(args.chunk_size)
@@ -200,6 +203,7 @@ def main():
     parser = create_parser()
     args = parser.parse_args()
     run(args)
+
 
 if __name__ == "__main__":
     main()

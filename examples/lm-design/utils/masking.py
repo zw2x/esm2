@@ -52,7 +52,7 @@ def assert_valid_mask(mask, x=None):
 
 
 def masked_insert_from_tokens(x, insert_mask, insert_toks):
-    """ 
+    """
     [B, L, K] -> [B, I, L, K]
         x contains n masks per row.
         I is a new inserted dimension made
@@ -73,20 +73,20 @@ def masked_insert_from_tokens(x, insert_mask, insert_toks):
     B, L, K = assert_shape(x, -1, -1, -1)
     n = assert_valid_mask(insert_mask)
     if insert_toks.dim() == 2:
-        I = assert_shape(insert_toks, -1, n) # [I, n]
-        insert_toks = insert_toks.unsqueeze(0).repeat(B, 1, 1) # [B, I, n]
+        I = assert_shape(insert_toks, -1, n)  # [I, n]
+        insert_toks = insert_toks.unsqueeze(0).repeat(B, 1, 1)  # [B, I, n]
     else:
-        I = assert_shape(insert_toks, B, -1, n) # [B, I, n]
+        I = assert_shape(insert_toks, B, -1, n)  # [B, I, n]
 
     # 1hot -> dense (remove the need for these.)
-    x_idx = x.argmax(-1) # [B, L]
-    insert_mask = insert_mask.squeeze(-1) # [B, L]
+    x_idx = x.argmax(-1)  # [B, L]
+    insert_mask = insert_mask.squeeze(-1)  # [B, L]
 
     # Open up insert dim
-    x_idx = x_idx.unsqueeze(1).repeat(1, I, 1) # [B, I, L]
-    insert_mask = insert_mask.unsqueeze(1).repeat(1, I, 1) # [B, I, L]
-    x_idx[insert_mask] = insert_toks.flatten() # [B, I, n]
+    x_idx = x_idx.unsqueeze(1).repeat(1, I, 1)  # [B, I, L]
+    insert_mask = insert_mask.unsqueeze(1).repeat(1, I, 1)  # [B, I, L]
+    x_idx[insert_mask] = insert_toks.flatten()  # [B, I, n]
 
     # dense -> 1hot
-    x = F.one_hot(x_idx, K).to(x) # [B, I, L, K]
+    x = F.one_hot(x_idx, K).to(x)  # [B, I, L, K]
     return x

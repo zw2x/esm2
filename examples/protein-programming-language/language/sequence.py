@@ -95,30 +95,26 @@ class ConstantSequenceSegment(SequenceSegmentFactory):
 
 class FixedLengthSequenceSegment(SequenceSegmentFactory):
     def __init__(
-        self, initial_sequence: Union[str, int], disallow_mutations_to_cysteine=True,
+        self,
+        initial_sequence: Union[str, int],
+        disallow_mutations_to_cysteine=True,
     ) -> None:
         super().__init__()
         self.mutation_residue_types = (
-            RESIDUE_TYPES_WITHOUT_CYSTEINE
-            if disallow_mutations_to_cysteine
-            else ALL_RESIDUE_TYPES
+            RESIDUE_TYPES_WITHOUT_CYSTEINE if disallow_mutations_to_cysteine else ALL_RESIDUE_TYPES
         )
 
         self.sequence = (
             initial_sequence
             if type(initial_sequence) == str
-            else random_sequence(
-                length=initial_sequence, corpus=self.mutation_residue_types
-            )
+            else random_sequence(length=initial_sequence, corpus=self.mutation_residue_types)
         )
 
     def get(self) -> str:
         return self.sequence
 
     def mutate(self) -> None:
-        self.sequence = substitute_one_amino_acid(
-            self.sequence, self.mutation_residue_types
-        )
+        self.sequence = substitute_one_amino_acid(self.sequence, self.mutation_residue_types)
 
     def num_mutation_candidates(self) -> int:
         return len(self.sequence)
@@ -138,9 +134,7 @@ def random_sequence(length: int, corpus: List[str]) -> str:
 
 
 def sequence_from_atomarray(atoms: AtomArray) -> str:
-    return "".join(
-        [RESIDUE_TYPES_3to1[aa] for aa in atoms[atoms.atom_name == "CA"].res_name]
-    )
+    return "".join([RESIDUE_TYPES_3to1[aa] for aa in atoms[atoms.atom_name == "CA"].res_name])
 
 
 class VariableLengthSequenceSegment(SequenceSegmentFactory):
@@ -149,24 +143,20 @@ class VariableLengthSequenceSegment(SequenceSegmentFactory):
         initial_sequence: Union[str, int],
         disallow_mutations_to_cysteine=True,
         mutation_operation_probabilities: List[float] = [
-            3., # Substitution weight.
-            1., # Deletion weight.
-            1., # Insertion weight.
+            3.0,  # Substitution weight.
+            1.0,  # Deletion weight.
+            1.0,  # Insertion weight.
         ],
     ) -> None:
         super().__init__()
         self.mutation_residue_types = (
-            RESIDUE_TYPES_WITHOUT_CYSTEINE
-            if disallow_mutations_to_cysteine
-            else ALL_RESIDUE_TYPES
+            RESIDUE_TYPES_WITHOUT_CYSTEINE if disallow_mutations_to_cysteine else ALL_RESIDUE_TYPES
         )
 
         self.sequence = (
             initial_sequence
             if type(initial_sequence) == str
-            else random_sequence(
-                length=initial_sequence, corpus=self.mutation_residue_types
-            )
+            else random_sequence(length=initial_sequence, corpus=self.mutation_residue_types)
         )
 
         self.mutation_operation_probabilities = np.array(mutation_operation_probabilities)
@@ -187,17 +177,13 @@ class VariableLengthSequenceSegment(SequenceSegmentFactory):
         mutation_operation()
 
     def _mutate_substitution(self) -> str:
-        self.sequence = substitute_one_amino_acid(
-            self.sequence, self.mutation_residue_types
-        )
+        self.sequence = substitute_one_amino_acid(self.sequence, self.mutation_residue_types)
 
     def _mutate_deletion(self) -> str:
         self.sequence = delete_one_amino_acid(self.sequence)
 
     def _mutate_insertion(self) -> str:
-        self.sequence = insert_one_amino_acid(
-            self.sequence, self.mutation_residue_types
-        )
+        self.sequence = insert_one_amino_acid(self.sequence, self.mutation_residue_types)
 
     def num_mutation_candidates(self) -> int:
         # NOTE(brianhie): This should be `3*len(self.sequence) + 1`,

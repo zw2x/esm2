@@ -27,9 +27,7 @@ from language import (
 
 def symmetric_binding_il10(num_binding_sites: int = 3) -> ProgramNode:
     binding_site_atoms: AtomArray = pdb_file_to_atomarray(fetch("1y6k", format="pdb"))
-    binding_site_atoms = get_atomarray_in_residue_range(
-        binding_site_atoms, start=31, end=40
-    )
+    binding_site_atoms = get_atomarray_in_residue_range(binding_site_atoms, start=31, end=40)
     binding_site_sequence: str = sequence_from_atomarray(binding_site_atoms)
 
     leader_amino_acid_sequence = FixedLengthSequenceSegment(45)
